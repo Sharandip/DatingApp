@@ -30,5 +30,12 @@ namespace API.Controllers
             return await _context.Users.FindAsync(Id);
         }
 
+        // [HttpPost("{Id}")]
+        // public async Task DeleteUser( int Id)
+        // {
+        //     AppUser userToRemove = _context.Users.Find(Id);
+        //     return await _context.Remove();
+        // }
+
     }
 }
