@@ -44,7 +44,7 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            if (!await UserExists(loginDto.Username)) return BadRequest("Invalid Usename!");
+            if (!await UserExists(loginDto.Username)) return Unauthorized("Invalid Usename!");
 
             AppUser user = await _context.Users.SingleOrDefaultAsync(user => user.UserName == loginDto.Username);
             HMACSHA512 hmac = new HMACSHA512(user.PasswordSalt);
@@ -52,7 +52,7 @@ namespace API.Controllers
             for (int passwordHash = 0; passwordHash < computedHash.Length; passwordHash++)
             {
                 if (user.PasswordHash[passwordHash] != computedHash[passwordHash])
-                    return BadRequest("Login Failed!");
+                    return Unauthorized("Invalid Password!");
             }
            return new UserDto{
                 Username = user.UserName,
