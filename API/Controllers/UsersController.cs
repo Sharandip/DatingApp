@@ -2,35 +2,53 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
+using API.DTOs;
 using API.Entities;
+using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-
+    [Authorize]
     public class UsersController : BaseAPIController
     {
-        private readonly DataContext _context;
-        public UsersController(DataContext context)
+        private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
+        public UsersController(IUserRepository userRepository, IMapper mapper)
         {
-            _context = context;
+            _mapper = mapper;
+            _userRepository = userRepository;
+
         }
 
         [HttpGet]
-        [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+
+            return Ok(await _userRepository.GetMembersAsync());
         }
 
-        [Authorize]
-        [HttpGet("{Id}")]
-        public async Task<ActionResult<AppUser>> GetUser(int Id)
+
+        // [HttpGet("{Id}")]
+        // public async Task<ActionResult<AppUser>> GetUserById(int Id)
+        // {
+        //     return await _userRepository.GetUserByIdAsync(Id);
+        // }
+
+        [HttpGet("{username}")]
+        public async Task<ActionResult<MemberDto>> GetUserByUsername(string username)
         {
-            return await _context.Users.FindAsync(Id);
+            return await _userRepository.GetMemberByUserNameAsync(username);
         }
+
+        // [HttpPost("{user}")]
+        // public void UpdateUser(AppUser user)
+        // {
+        //     _userRepository.Update(user);
+        // }
 
         // [HttpPost("{Id}")]
         // public async Task DeleteUser( int Id)
